@@ -17,7 +17,7 @@ public interface IConvertToArrayString
             Name = name;
             Desription = desription;
 
-            TypedText = name + (string.IsNullOrEmpty(desription) ? "" : $"({desription})");
+            TypedText = name + (string.IsNullOrEmpty(desription) ? "" : $" ({desription})");
         }
     }
 

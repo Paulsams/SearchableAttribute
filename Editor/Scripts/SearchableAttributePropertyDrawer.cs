@@ -1,5 +1,5 @@
-using Paulsams.MicsUtil.FromRuntimeCreateScript;
-using Paulsams.MicsUtil;
+using Paulsams.MicsUtils.FromRuntimeCreateScript;
+using Paulsams.MicsUtils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,6 +32,11 @@ public class SearchableAttributePropertyDrawer : PropertyDrawer
 
     private static void CreateFile()
     {
+        string GetScriptForAssemblyReference(string guid) =>
+            $"{{\n \"reference\": \"GUID:{guid}\"\n}}";
+
+        const string guidRuntimeReference = "8888d829b5c84fc4fbd022d90d647b67";
+
         var typesConverters = ReflectionUtilities.GetFinalAssignableTypesFromAllTypes(typeof(IConvertToArrayString));
         for (int i = 0; i < typesConverters.Count; ++i)
         {
@@ -54,8 +59,6 @@ public class SearchableAttributePropertyDrawer : PropertyDrawer
         }
         script.AppendBreakingBrace(ref tabIndex);
 
-        script.AppendLine();
-
         string pathToDirectory = $"{Application.dataPath}/{_localPathToDirectoryForUtilities}";
 
         string pathToRuntimeFolder = $"{pathToDirectory}/Runtime";
@@ -67,6 +70,11 @@ public class SearchableAttributePropertyDrawer : PropertyDrawer
         string pathToCustomConverters = $"{pathToEditorFolder}/Custom Converters";
         if (Directory.Exists(pathToCustomConverters) == false)
             Directory.CreateDirectory(pathToCustomConverters);
+
+        string localPathToAsmrefForRuntime = "Paulsams.SearchableAttribute.Runtime.asmref";
+        string fullPathToAsmrefForRuntime = $"{pathToRuntimeFolder}/{localPathToAsmrefForRuntime}";
+        if (File.Exists(fullPathToAsmrefForRuntime) == false)
+            File.WriteAllText(fullPathToAsmrefForRuntime, GetScriptForAssemblyReference(guidRuntimeReference));
 
         File.WriteAllText($"{pathToRuntimeFolder}/{_nameClass}.cs", script.ToString());
     }

@@ -51,7 +51,8 @@ public class SearchablePopupWindow : PopupWindowContent
     private static readonly float _paddingElement = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
     private static readonly float _heightFormSearchField = _paddingElement + 5f;
 
-    private static readonly Vector2 _sizeWindow = new Vector2(250, _heightFormSearchField + _countShowedElements * _paddingElement);
+    private static readonly float _scrollHeight = _countShowedElements * _paddingElement;
+    private static readonly Vector2 _sizeWindow = new Vector2(250, _heightFormSearchField + _scrollHeight);
     private static readonly Color32 _colorAboveCurrentIndex = new Color32(62, 95, 150, 255);
 
     private Vector2 _scrollPosition;
@@ -65,7 +66,21 @@ public class SearchablePopupWindow : PopupWindowContent
     private CurrentIndex _currentIndex;
     private Action<IConvertToArrayString.Element, int> _callbackSetValue;
 
-    private Vector2 ScrollPositionForCurrentIndex => new Vector2(0f, _paddingElement * (int)(_currentIndex.Selected - _halfShowedElements + 1));
+    private Vector2 ScrollPositionForCurrentIndex
+    {
+        get
+        {
+            float futurePosition = _paddingElement * (_currentIndex.Selected - _halfShowedElements + 0.5f);
+
+            int directionSelectedFromCenter = Math.Sign(futurePosition - _scrollPosition.y);
+            float difference = futurePosition - (_scrollPosition.y + (_halfShowedElements - 0.5f) * _paddingElement * directionSelectedFromCenter);
+
+            if (Math.Sign(difference) == directionSelectedFromCenter)
+                return new Vector2(0f, _scrollPosition.y + difference);
+            else
+                return _scrollPosition;
+        }
+    }
 
     public SearchablePopupWindow(ReadOnlyCollection<IConvertToArrayString.Element> allNames, int startIndex, Action<IConvertToArrayString.Element, int> callbackSetValue)
     {
@@ -78,7 +93,7 @@ public class SearchablePopupWindow : PopupWindowContent
         _currentIndex = new CurrentIndex(_allNames.Count, startIndex);
         _elementButtonStyle = GetStyleForElementButton();
 
-        _scrollPosition = ScrollPositionForCurrentIndex;
+        _scrollPosition = new Vector2(0f, _paddingElement * (_currentIndex.Selected - _halfShowedElements + 0.5f));
     }
 
     private void InitSearchField()
@@ -128,7 +143,7 @@ public class SearchablePopupWindow : PopupWindowContent
 
                 CheckForDrawAboveCurrentElement(guiEvent, i, currentRect);
 
-                if (DrawCurrentElement(currentRect, i))
+                if (DrawCurrentElementAndCheckPressedButton(currentRect, i))
                     return;
             }
         }
@@ -148,7 +163,7 @@ public class SearchablePopupWindow : PopupWindowContent
         }
     }
 
-    private bool DrawCurrentElement(Rect currentRect, int i)
+    private bool DrawCurrentElementAndCheckPressedButton(Rect currentRect, int i)
     {
         GUIContent contentButton = new GUIContent(_currentNames[i].TypedText, _currentNames[i].TypedText);
         if (GUI.Button(currentRect, contentButton, _elementButtonStyle))

@@ -1,10 +1,17 @@
 {
   "name": "com.paulsams.searchable-attribute",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "SearchableAttribute",
   "dependencies": {
     "com.paulsams.misc-utilities": "1.0.0"
   },
   "description": "This package allows you to use the [Searchable] attribute that you can use the pop-up window and the search bar to select the desired element.\n\nFor enum it works without any additional actions, and for some custom solutions there is an IConvertToArrayString interface that needs to be implemented in the assembly only for the editor, and then its name can be found in the NamesConvertersToArrayString static class.",
-  "unity": "2019.2"
+  "unity": "2019.2",
+  "samples": [
+    {
+      "displayName": "Example Enum and One Custom Converter",
+      "description": "Enum and Item Types load from json",
+      "path": "Samples~/Example Enum and One Custom Converter"
+    }
+  ]
 }

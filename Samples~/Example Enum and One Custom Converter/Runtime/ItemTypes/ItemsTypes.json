@@ -1,0 +1,18 @@
+[
+  {
+    "Name": "Apple",
+    "Category": "Fruits"
+  },
+  {
+    "Name": "Tomato",
+    "Category": "Vegetables"
+  },
+  {
+    "Name": "Cabbage",
+    "Category": "Vegetables"
+  },
+  {
+    "Name": "Eggplant",
+    "Category": "Vegetables"
+  }
+]
