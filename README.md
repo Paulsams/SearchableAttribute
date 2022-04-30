@@ -1,5 +1,7 @@
 # SearchableAttribute
-This package allows you to use the [Searchable] attribute that you can use the pop-up window and the search bar to select the desired element.
+This package allows you to use the [Searchable] attribute that you can use the pop-up window and the search field to select the desired element.
+
+[Документация на русском](https://github.com/Paulsams/SearchableAttribute/blob/master/Documentation~/RU.md)
 
 ## Add to project
 To add this package to the project, follow these steps:
