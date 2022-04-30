@@ -21,7 +21,7 @@
 2) Позволяет писать свои кастомные преобразования в список строк из которых можно выбирать и присвивать через SerializeProperty значение полю.
 
 Подробнее:
-при импорте данного пакета у Вас должны будут создаться папки по пути: "Utilities/SearchableAttribute". Файл "NamesConvertersToArrayString" (Runtime/NamesConvertersToArrayString.cs) нужен для того, чтобы не хардкодить названия классов при написании их аргументом в атрибут. Папка `Editor/Custom Converters` может служить просто папкой для создания ваших кастомных конвертеров, но это не запрещает Вам создавать их в любом месте в проекте. Пример конверетера есть ниже.
+при импорте данного пакета у Вас должны будут создаться папки по пути: `Utilities/SearchableAttribute`. Файл "NamesConvertersToArrayString" (`Runtime/NamesConvertersToArrayString.cs`) нужен для того, чтобы не хардкодить названия классов при написании их аргументом в атрибут. Папка `Editor/Custom Converters` может служить просто папкой для создания ваших кастомных конвертеров, но это не запрещает Вам создавать их в любом месте в проекте. Пример конверетера есть ниже.
 
 ```cs
 [SerializeField, Searchable(NamesConvertersToArrayString.ItemTypes)] private string _itemType;
