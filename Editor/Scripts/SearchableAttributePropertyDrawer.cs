@@ -27,7 +27,7 @@ public class SearchableAttributePropertyDrawer : PropertyDrawer
         SearchableAttribute searchableAttribute = attribute as SearchableAttribute;
 
         var converter = searchableAttribute.ConverterTypeName == null ? null : _converters[searchableAttribute.ConverterTypeName];
-        _searchableAttributeDrawer.Draw(position, property, label, new SearchableAttributeParameters(converter: converter));
+        _searchableAttributeDrawer.Draw(position, property, label, new SearchableAttributeParameters(converter: converter, windowType: searchableAttribute.WindowType));
     }
 
     private static void CreateFile()

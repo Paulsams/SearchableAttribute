@@ -13,7 +13,7 @@ public class ItemTypesToArrayString : IConvertToArrayString
 
         if (JsonSerializerUtility.TryDeserialize(out ItemType[] itemTypes, pathToJson))
         {
-            _items = itemTypes.Select((itemType) => new IConvertToArrayString.Element(itemType.Name, itemType.Category)).ToArray();
+            _items = itemTypes.Select((itemType) => new IConvertToArrayString.Element(category: itemType.Category, itemType.Name)).ToArray();
         }
         else
         {

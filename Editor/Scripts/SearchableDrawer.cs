@@ -1,22 +1,27 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 public struct SearchableAttributeParameters
 {
     public readonly Action<SerializedProperty, string> CallbackSetValue;
     public readonly IConvertToArrayString Converter;
+    public readonly SearchableWindowType WindowType;
 
-    public SearchableAttributeParameters(Action<SerializedProperty, string> callbackSetValue = null, IConvertToArrayString converter = null)
+    public SearchableAttributeParameters(Action<SerializedProperty, string> callbackSetValue = null, IConvertToArrayString converter = null, SearchableWindowType windowType = SearchableWindowType.Advanced)
     {
         CallbackSetValue = callbackSetValue;
         Converter = converter;
+        WindowType = windowType;
     }
 }
 
 public class SearchableDrawer
 {
+    public delegate void SetValueHandler(IConvertToArrayString.Element element, int indexChoiced);
+
     private const float _widthButtonChangeKey = 60f;
     private const float _offsetFromLabelBetweenButton = 5f;
 
@@ -48,7 +53,7 @@ public class SearchableDrawer
 
     private static void DrawLabel(Rect rectKey, IConvertToArrayString.Element[] keys, int indexKey)
     {
-        string nameKey = keys[indexKey].TypedText;
+        string nameKey = keys[indexKey].NameWithDescription;
         GUIStyle styleLabel = EditorStyles.textField;
         styleLabel.richText = true;
         EditorGUI.LabelField(rectKey, nameKey, EditorStyles.textField);
@@ -58,7 +63,18 @@ public class SearchableDrawer
     {
         Rect rect = new Rect(position);
         rect.y += EditorGUIUtility.singleLineHeight;
-        PopupWindow.Show(rect, new SearchablePopupWindow(Array.AsReadOnly(keys), indexKey, (element, index) => SetValue(property, parameters, element, index)));
+
+        var readonlyKeys = Array.AsReadOnly(keys);
+        SetValueHandler callbackSetValue = (element, index) => SetValue(property, parameters, element, index);
+        switch (parameters.WindowType)
+        {
+            case SearchableWindowType.Simple:
+                PopupWindow.Show(rect, new SearchablePopupWindow(readonlyKeys, indexKey, callbackSetValue));
+                break;
+            case SearchableWindowType.Advanced:
+                new SearchableAdvancedDropdownWindow(property.displayName, indexKey, readonlyKeys, callbackSetValue).Show(rect);
+                break;
+        }
     }
 
     private static int GetAndClampIndex(SerializedProperty property, IConvertToArrayString converter, IConvertToArrayString.Element[] keys)

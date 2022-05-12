@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
+using static SettingsForSearchableWindow;
 public class SearchablePopupWindow : PopupWindowContent
 {
     private class CurrentIndex
@@ -45,35 +46,32 @@ public class SearchablePopupWindow : PopupWindowContent
         }
     }
 
-    private const int _countShowedElements = 17;
-    private const float _halfShowedElements = _countShowedElements / 2f;
+    private static readonly float _heightFromSearchField = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing + 5f;
+    private static readonly SettingsForSearchableWindow _settings = new SettingsForSearchableWindow(_heightFromSearchField);
 
-    private static readonly float _paddingElement = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-    private static readonly float _heightFormSearchField = _paddingElement + 5f;
-
-    private static readonly float _scrollHeight = _countShowedElements * _paddingElement;
-    private static readonly Vector2 _sizeWindow = new Vector2(250, _heightFormSearchField + _scrollHeight);
     private static readonly Color32 _colorAboveCurrentIndex = new Color32(62, 95, 150, 255);
 
+    private readonly ReadOnlyCollection<IConvertToArrayString.Element> _allNames;
+    private readonly CurrentIndex _currentIndex;
+    private readonly SearchableDrawer.SetValueHandler _callbackSetValue;
+
+    private readonly GUIStyle _elementButtonStyle;
+
     private Vector2 _scrollPosition;
-    private GUIStyle _elementButtonStyle;
     private IConvertToArrayString.Element[] _currentNames;
-    private ReadOnlyCollection<IConvertToArrayString.Element> _allNames;
 
     private SearchField _searchField;
     private string _searchedText = "";
-
-    private CurrentIndex _currentIndex;
-    private Action<IConvertToArrayString.Element, int> _callbackSetValue;
 
     private Vector2 ScrollPositionForCurrentIndex
     {
         get
         {
-            float futurePosition = _paddingElement * (_currentIndex.Selected - _halfShowedElements + 0.5f);
+            var heightItem = _settings.HeightItem;
+            float futurePosition = heightItem * (_currentIndex.Selected - HalfShowedElements + 0.5f);
 
             int directionSelectedFromCenter = Math.Sign(futurePosition - _scrollPosition.y);
-            float difference = futurePosition - (_scrollPosition.y + (_halfShowedElements - 0.5f) * _paddingElement * directionSelectedFromCenter);
+            float difference = futurePosition - (_scrollPosition.y + (HalfShowedElements - 0.5f) * heightItem * directionSelectedFromCenter);
 
             if (Math.Sign(difference) == directionSelectedFromCenter)
                 return new Vector2(0f, _scrollPosition.y + difference);
@@ -82,7 +80,7 @@ public class SearchablePopupWindow : PopupWindowContent
         }
     }
 
-    public SearchablePopupWindow(ReadOnlyCollection<IConvertToArrayString.Element> allNames, int startIndex, Action<IConvertToArrayString.Element, int> callbackSetValue)
+    public SearchablePopupWindow(ReadOnlyCollection<IConvertToArrayString.Element> allNames, int startIndex, SearchableDrawer.SetValueHandler callbackSetValue)
     {
         _callbackSetValue = callbackSetValue;
 
@@ -93,7 +91,7 @@ public class SearchablePopupWindow : PopupWindowContent
         _currentIndex = new CurrentIndex(_allNames.Count, startIndex);
         _elementButtonStyle = GetStyleForElementButton();
 
-        _scrollPosition = new Vector2(0f, _paddingElement * (_currentIndex.Selected - _halfShowedElements + 0.5f));
+        _scrollPosition = new Vector2(0f, _settings.HeightItem * (_currentIndex.Selected - HalfShowedElements + 0.5f));
     }
 
     private void InitSearchField()
@@ -115,7 +113,7 @@ public class SearchablePopupWindow : PopupWindowContent
         return elementButtonStyle;
     }
 
-    public override Vector2 GetWindowSize() => _sizeWindow;
+    public override Vector2 GetWindowSize() => _settings.SizeWindow;
 
     public override void OnGUI(Rect rect)
     {
@@ -165,7 +163,7 @@ public class SearchablePopupWindow : PopupWindowContent
 
     private bool DrawCurrentElementAndCheckPressedButton(Rect currentRect, int i)
     {
-        GUIContent contentButton = new GUIContent(_currentNames[i].TypedText, _currentNames[i].TypedText);
+        GUIContent contentButton = new GUIContent(_currentNames[i].NameWithDescription, _currentNames[i].NameWithDescription);
         if (GUI.Button(currentRect, contentButton, _elementButtonStyle))
         {
             ChoiceText(_currentNames[i]);

@@ -1,23 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using System.Collections.ObjectModel;
 using UnityEditor;
-using UnityEngine;
 
 public interface IConvertToArrayString
 {
     public struct Element
     {
+        public readonly string Category;
+
         public readonly string Name;
-        public readonly string Desription;
+        public readonly string Description;
 
-        public readonly string TypedText;
+        public readonly string NameWithDescription;
 
-        public Element(string name, string desription = "")
+        public string[] SplitedCategories => Category.Split("/");
+
+        public Element(string category, string name, string description = "") : this(name, description)
         {
-            Name = name;
-            Desription = desription;
+            Category = category;
+        }
 
-            TypedText = name + (string.IsNullOrEmpty(desription) ? "" : $" ({desription})");
+        public Element(string name, string description = "")
+        {
+            Category = "";
+            Name = name;
+            Description = description;
+
+            NameWithDescription = name + (string.IsNullOrEmpty(description) ? "" : $" ({description})");
         }
     }
 
