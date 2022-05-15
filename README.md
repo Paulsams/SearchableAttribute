@@ -63,7 +63,7 @@ public class ItemTypesToArrayString : IConvertToArrayString
 }
 ```
 
-![image](https://github.com/Paulsams/SearchableAttribute/blob/master/Documentation~/Enum%20Example.gif)
+![image](https://github.com/Paulsams/SearchableAttribute/blob/master/Documentation~/Custom%20Converter.png)
 
 ## Constructors
 ```cs
