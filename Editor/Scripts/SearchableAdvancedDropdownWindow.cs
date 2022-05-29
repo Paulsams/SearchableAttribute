@@ -23,7 +23,7 @@ public class SearchableAdvancedDropdownWindow : AdvancedDropdown
             Index = index;
         }
 
-        public Item Add(string name)
+        public Item Add(string name, string label)
         {
             var childrenDropdownItem = new AdvancedDropdownItem(name);
 
@@ -130,9 +130,9 @@ public class SearchableAdvancedDropdownWindow : AdvancedDropdown
             foreach (var category in categoriesElements[i])
             {
                 if(category != string.Empty)
-                    item = item.Add(category);
+                    item = item.Add(category, category);
             }
-            item = item.Add(_allNames[i].NameWithDescription);
+            item = item.Add(_allNames[i].Name, _allNames[i].NameWithDescription);
 
             _dropdownItems.Add(item.DropdownItem.id, i);
         }
