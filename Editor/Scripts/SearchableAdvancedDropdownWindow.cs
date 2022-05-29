@@ -23,9 +23,9 @@ public class SearchableAdvancedDropdownWindow : AdvancedDropdown
             Index = index;
         }
 
-        public Item Add(string name, string label)
+        public Item Add(string label, string name)
         {
-            var childrenDropdownItem = new AdvancedDropdownItem(name);
+            var childrenDropdownItem = new AdvancedDropdownItem(label);
 
             if (_childrens.TryGetValue(name, out Item childrenItem) == false)
             {
@@ -132,7 +132,7 @@ public class SearchableAdvancedDropdownWindow : AdvancedDropdown
                 if(category != string.Empty)
                     item = item.Add(category, category);
             }
-            item = item.Add(_allNames[i].Name, _allNames[i].NameWithDescription);
+            item = item.Add(_allNames[i].NameWithDescription, _allNames[i].Name);
 
             _dropdownItems.Add(item.DropdownItem.id, i);
         }
