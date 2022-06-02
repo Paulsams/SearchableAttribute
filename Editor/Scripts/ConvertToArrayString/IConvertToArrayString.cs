@@ -1,6 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using UnityEditor;
+using UnityEngine;
 
 public interface IConvertToArrayString
 {
@@ -15,18 +17,23 @@ public interface IConvertToArrayString
 
         public string[] SplitedCategories => Category.Split("/");
 
-        public Element(string category, string name, string description = "") : this(name, description)
+        public Element(string nameWithCategory, string description = "")
         {
-            Category = category;
-        }
+            int indexLastSeparator = nameWithCategory.LastIndexOf('/');
+            if (indexLastSeparator != -1)
+            {
+                Category = nameWithCategory.Remove(indexLastSeparator);
+                Name = nameWithCategory.Substring(indexLastSeparator + 1);
+            }
+            else
+            {
+                Category = "";
+                Name = nameWithCategory;
+            }
 
-        public Element(string name, string description = "")
-        {
-            Category = "";
-            Name = name;
             Description = description;
 
-            NameWithDescription = name + (string.IsNullOrEmpty(description) ? "" : $" ({description})");
+            NameWithDescription = Name + (string.IsNullOrEmpty(description) ? "" : $" ({description})");
         }
     }
 
