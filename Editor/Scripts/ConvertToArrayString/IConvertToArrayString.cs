@@ -15,10 +15,14 @@ public interface IConvertToArrayString
 
         public readonly string NameWithDescription;
 
+        public readonly string NameWithCategory;
+
         public string[] SplitedCategories => Category.Split("/");
 
         public Element(string nameWithCategory, string description = "")
         {
+            NameWithCategory = nameWithCategory;
+
             int indexLastSeparator = nameWithCategory.LastIndexOf('/');
             if (indexLastSeparator != -1)
             {
