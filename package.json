@@ -1,6 +1,6 @@
 {
   "name": "com.paulsams.searchable-attribute",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "displayName": "SearchableAttribute",
   "dependencies": {
     "com.paulsams.misc-utilities": "1.2.0"

@@ -47,7 +47,7 @@ public class SearchableAdvancedDropdownWindow : AdvancedDropdown
 
     private readonly ReadOnlyCollection<IConvertToArrayString.Element> _allNames;
     private readonly SearchableDrawer.SetValueHandler _callbackSetValue;
-    private readonly Dictionary<int, int> _dropdownItems = new Dictionary<int, int>();
+    private readonly Dictionary<AdvancedDropdownItem, int> _dropdownItems = new Dictionary<AdvancedDropdownItem, int>();
 
     private readonly Item _itemRoot;
 
@@ -134,7 +134,7 @@ public class SearchableAdvancedDropdownWindow : AdvancedDropdown
             }
             item = item.Add(_allNames[i].NameWithDescription, _allNames[i].Name);
 
-            _dropdownItems.Add(item.DropdownItem.id, i);
+            _dropdownItems.Add(item.DropdownItem, i);
         }
     }
 
@@ -150,7 +150,7 @@ public class SearchableAdvancedDropdownWindow : AdvancedDropdown
 
     protected override void ItemSelected(AdvancedDropdownItem item)
     {
-        int indexChoicedElement = _dropdownItems[item.id];
+        int indexChoicedElement = _dropdownItems[item];
         _callbackSetValue.Invoke(_allNames[indexChoicedElement], indexChoicedElement);
     }
 }
