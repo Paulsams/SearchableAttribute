@@ -14,8 +14,8 @@ public class SearchableAttributePropertyDrawer : PropertyDrawer
     private const string _nameClass = "NamesConvertersToArrayString";
     private const string _localPathToDirectoryForUtilities = "Utilities/SearchableAttribute";
 
+    private static readonly Dictionary<string, IConvertToArrayString> _converters = new Dictionary<string, IConvertToArrayString>();
     private readonly SearchableDrawer _searchableAttributeDrawer = new SearchableDrawer();
-    private readonly static Dictionary<string, IConvertToArrayString> _converters = new Dictionary<string, IConvertToArrayString>();
 
     static SearchableAttributePropertyDrawer()
     {
