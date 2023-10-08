@@ -91,11 +91,11 @@ public class SearchableAttributePropertyDrawer : PropertyDrawer
             streamNamesClass.Read(readBuffer);
             if (readBuffer.SequenceEqual(writeBuffer) == false)
             {
+                streamNamesClass.SetLength(0);
                 streamNamesClass.Write(writeBuffer);
                 AssetDatabase.ImportAsset("Assets" + pathToDirectory.Substring(Application.dataPath.Length));
                 AssetDatabase.Refresh();
             }
         }
-        File.WriteAllText($"{pathToRuntimeFolder}/{_nameClass}.cs", script.ToString());
     }
 }
