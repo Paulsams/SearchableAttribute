@@ -3,6 +3,7 @@ using Paulsams.MicsUtils;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -36,6 +37,7 @@ public class SearchableAttributePropertyDrawer : PropertyDrawer
             $"{{\n \"reference\": \"GUID:{guid}\"\n}}";
 
         const string guidRuntimeReference = "8888d829b5c84fc4fbd022d90d647b67";
+        const string guidEditorReference = "2ee1590a640ee2948807906eb1716355";
 
         var typesConverters = ReflectionUtilities.GetFinalAssignableTypesFromAllTypes(typeof(IConvertToArrayString));
         for (int i = 0; i < typesConverters.Count; ++i)
@@ -75,7 +77,25 @@ public class SearchableAttributePropertyDrawer : PropertyDrawer
         string fullPathToAsmrefForRuntime = $"{pathToRuntimeFolder}/{localPathToAsmrefForRuntime}";
         if (File.Exists(fullPathToAsmrefForRuntime) == false)
             File.WriteAllText(fullPathToAsmrefForRuntime, GetScriptForAssemblyReference(guidRuntimeReference));
+        
+        string localPathToAsmrefForEditor = "Paulsams.SearchableAttribute.Editor.asmref";
+        string fullPathToAsmrefForEditor = $"{pathToEditorFolder}/{localPathToAsmrefForEditor}";
+        if (File.Exists(fullPathToAsmrefForEditor) == false)
+            File.WriteAllText(fullPathToAsmrefForEditor, GetScriptForAssemblyReference(guidEditorReference));
 
+        var pathToNamesClass = $"{pathToRuntimeFolder}/{_nameClass}.cs";
+        using (var streamNamesClass = new FileStream(pathToNamesClass, FileMode.OpenOrCreate))
+        {
+            byte[] readBuffer = new byte[streamNamesClass.Length];
+            byte[] writeBuffer = Encoding.Default.GetBytes(script.ToString());
+            streamNamesClass.Read(readBuffer);
+            if (readBuffer.SequenceEqual(writeBuffer) == false)
+            {
+                streamNamesClass.Write(writeBuffer);
+                AssetDatabase.ImportAsset("Assets" + pathToDirectory.Substring(Application.dataPath.Length));
+                AssetDatabase.Refresh();
+            }
+        }
         File.WriteAllText($"{pathToRuntimeFolder}/{_nameClass}.cs", script.ToString());
     }
 }

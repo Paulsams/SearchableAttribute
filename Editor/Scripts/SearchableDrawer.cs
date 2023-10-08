@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 public struct SearchableAttributeParameters
@@ -20,7 +19,7 @@ public struct SearchableAttributeParameters
 
 public class SearchableDrawer
 {
-    public delegate void SetValueHandler(IConvertToArrayString.Element element, int indexChoiced);
+    public delegate void SetValueHandler(IConvertToArrayString.Element element, int indexChoose);
 
     private const float _widthButtonChangeKey = 60f;
     private const float _offsetFromLabelBetweenButton = 5f;
