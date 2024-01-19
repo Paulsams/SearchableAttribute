@@ -1,6 +1,6 @@
 {
     "name": "Paulsams.SearchableAttribute.Editor",
-    "rootNamespace": "",
+    "rootNamespace": "Paulsams.SearchableAttributeDrawer.Editor",
     "references": [
         "GUID:8888d829b5c84fc4fbd022d90d647b67",
         "GUID:ceda4d113c3779349b26462b36fd1123",
