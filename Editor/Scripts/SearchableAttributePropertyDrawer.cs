@@ -1,5 +1,4 @@
 using Paulsams.MicsUtils.CodeGeneration;
-using Paulsams.MicsUtils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -48,15 +47,15 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
 
         private static void CreateFile()
         {
-            string GetScriptForAssemblyReference(string guid) =>
-                $"{{\n \"reference\": \"GUID:{guid}\"\n}}";
+            string GetScriptForAssemblyReference(string nameAssembly) =>
+                $"{{\n \"reference\": \"{nameAssembly}\"\n}}";
 
-            const string guidRuntimeReference = "8888d829b5c84fc4fbd022d90d647b67";
-            const string guidEditorReference = "2ee1590a640ee2948807906eb1716355";
+            const string nameAssemblyForRuntime = "Paulsams.SearchableAttribute";
+            const string nameAssemblyForEditor = "Paulsams.SearchableAttribute.Editor";
 
             var typesConverters =
-                ReflectionUtilities.GetFinalAssignableTypesFromAllTypes(typeof(IConvertToArrayString));
-            foreach (var type in typesConverters)
+                TypeCache.GetTypesDerivedFrom<IConvertToArrayString>(nameAssemblyForEditor);
+            foreach (var type in typesConverters.Where(type => type.IsAbstract == false && type.IsInterface == false))
                 _converters.Add(type.Name, Activator.CreateInstance(type) as IConvertToArrayString);
 
             StringBuilder script = new StringBuilder();
@@ -88,22 +87,28 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
             if (Directory.Exists(pathToCustomConverters) == false)
                 Directory.CreateDirectory(pathToCustomConverters);
 
-            string localPathToAsmrefForRuntime = "Paulsams.SearchableAttribute.Runtime.asmref";
+            string localPathToAsmrefForRuntime = $"{nameAssemblyForRuntime}.asmref";
             string fullPathToAsmrefForRuntime = $"{pathToRuntimeFolder}/{localPathToAsmrefForRuntime}";
             if (File.Exists(fullPathToAsmrefForRuntime) == false)
-                File.WriteAllText(fullPathToAsmrefForRuntime, GetScriptForAssemblyReference(guidRuntimeReference));
+                File.WriteAllText(fullPathToAsmrefForRuntime, GetScriptForAssemblyReference(nameAssemblyForRuntime));
 
-            string localPathToAsmrefForEditor = "Paulsams.SearchableAttribute.Editor.asmref";
+            string localPathToAsmrefForEditor = $"{nameAssemblyForEditor}.asmref";
             string fullPathToAsmrefForEditor = $"{pathToEditorFolder}/{localPathToAsmrefForEditor}";
             if (File.Exists(fullPathToAsmrefForEditor) == false)
-                File.WriteAllText(fullPathToAsmrefForEditor, GetScriptForAssemblyReference(guidEditorReference));
+                File.WriteAllText(fullPathToAsmrefForEditor, GetScriptForAssemblyReference(nameAssemblyForEditor));
 
             var pathToNamesClass = $"{pathToRuntimeFolder}/{_nameClass}.cs";
             using (var streamNamesClass = new FileStream(pathToNamesClass, FileMode.OpenOrCreate))
             {
                 byte[] readBuffer = new byte[streamNamesClass.Length];
                 byte[] writeBuffer = Encoding.Default.GetBytes(script.ToString());
-                streamNamesClass.Read(readBuffer);
+
+                int readCount = 0;
+                do
+                    readCount += streamNamesClass.Read(readBuffer, readCount,
+                        (int)(streamNamesClass.Length - readCount));
+                while (readCount != readBuffer.Length);
+
                 if (readBuffer.SequenceEqual(writeBuffer) == false)
                 {
                     streamNamesClass.SetLength(0);
