@@ -1,0 +1,17 @@
+{
+    "name": "Paulsams.Searchable.Example",
+    "rootNamespace": "Paulsams.Searchable.Example",
+    "references": [
+        "Paulsams.SearchableAttribute",
+        "Paulsams.MiscUtilities"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Paulsams.SearchableAttributeDrawer.Editor
+namespace Paulsams.Searchable.Editor
 {
     public class SettingsForSearchableWindow
     {

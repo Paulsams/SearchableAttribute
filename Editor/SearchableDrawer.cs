@@ -1,21 +1,22 @@
 using System;
 using System.Collections.Generic;
+using Paulsams.Searchable.Converters;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using PopupWindow = UnityEditor.PopupWindow;
 
-namespace Paulsams.SearchableAttributeDrawer.Editor
+namespace Paulsams.Searchable.Editor
 {
     public struct SearchableAttributeParameters
     {
         public readonly Action<SerializedProperty, string> CallbackSetValue;
-        public readonly IConvertToArrayString Converter;
+        public readonly ISearchableConverter Converter;
         public readonly SearchableWindowType WindowType;
 
         public SearchableAttributeParameters(
             Action<SerializedProperty, string> callbackSetValue = null,
-            IConvertToArrayString converter = null,
+            ISearchableConverter converter = null,
             SearchableWindowType windowType = SearchableWindowType.Advanced)
         {
             CallbackSetValue = callbackSetValue;
@@ -26,16 +27,16 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
 
     public static class SearchableDrawer
     {
-        public delegate void SetValueHandler(IConvertToArrayString.Element element, int indexChoose);
+        public delegate void SetValueHandler(ISearchableConverter.Element element, int indexChoose);
 
         private const string _textOnButtonChangeKey = "Change";
         private const float _widthButtonChangeKey = 60f;
         private const float _offsetFromLabelBetweenButton = 5f;
 
-        private static readonly Dictionary<SerializedPropertyType, IConvertToArrayString> _converters =
-            new Dictionary<SerializedPropertyType, IConvertToArrayString>()
+        private static readonly Dictionary<SerializedPropertyType, ISearchableConverter> _converters =
+            new Dictionary<SerializedPropertyType, ISearchableConverter>()
             {
-                [SerializedPropertyType.Enum] = new EnumToArrayString(),
+                [SerializedPropertyType.Enum] = new EnumConverter(),
             };
 
         public static class OnGUI
@@ -53,9 +54,9 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
                 Rect rectButtonChangeKey = new Rect(rectKey.xMax + _offsetFromLabelBetweenButton, position.y,
                     _widthButtonChangeKey, position.height);
 
-                IConvertToArrayString converter = GetConverter(property, parameters);
+                ISearchableConverter converter = GetConverter(property, parameters);
 
-                IConvertToArrayString.Element[] keys = converter.Convert(property);
+                ISearchableConverter.Element[] keys = converter.Convert(property);
                 int indexKey = GetAndClampIndex(property, converter, keys);
 
                 DrawLabel(rectKey, keys, indexKey);
@@ -64,7 +65,7 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
                     ShowPopupWindow(position, property, parameters, keys, indexKey);
             }
 
-            private static void DrawLabel(Rect rectKey, IConvertToArrayString.Element[] keys, int indexKey)
+            private static void DrawLabel(Rect rectKey, ISearchableConverter.Element[] keys, int indexKey)
             {
                 string nameKey = keys[indexKey].NameWithDescription;
                 GUIStyle styleLabel = EditorStyles.textField;
@@ -78,9 +79,9 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
             public static VisualElement Create(SerializedProperty property, string label,
                 SearchableAttributeParameters parameters = default)
             {
-                IConvertToArrayString converter = GetConverter(property, parameters);
+                ISearchableConverter converter = GetConverter(property, parameters);
 
-                IConvertToArrayString.Element[] keys = converter.Convert(property);
+                ISearchableConverter.Element[] keys = converter.Convert(property);
                 int indexKey = GetAndClampIndex(property, converter, keys);
 
                 var container = new VisualElement()
@@ -124,8 +125,8 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
 
         private static void ShowPopupWindow(Rect position, SerializedProperty property,
             SearchableAttributeParameters parameters,
-            IConvertToArrayString.Element[] keys, int indexKey,
-            Action<IConvertToArrayString.Element> additionallyCallbackSetValue = null)
+            ISearchableConverter.Element[] keys, int indexKey,
+            Action<ISearchableConverter.Element> additionallyCallbackSetValue = null)
         {
             Rect rect = new Rect(position);
             rect.y += EditorGUIUtility.singleLineHeight;
@@ -148,8 +149,8 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
             }
         }
 
-        private static int GetAndClampIndex(SerializedProperty property, IConvertToArrayString converter,
-            IConvertToArrayString.Element[] keys)
+        private static int GetAndClampIndex(SerializedProperty property, ISearchableConverter converter,
+            ISearchableConverter.Element[] keys)
         {
             int indexKey = converter.GetIndex(property);
 
@@ -163,19 +164,19 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
             return indexKey;
         }
 
-        private static IConvertToArrayString GetConverter(SerializedProperty property,
+        private static ISearchableConverter GetConverter(SerializedProperty property,
             SearchableAttributeParameters parameters)
         {
-            IConvertToArrayString converter = parameters.Converter;
+            ISearchableConverter converter = parameters.Converter;
             if (converter == null)
                 converter = _converters[property.propertyType];
             return converter;
         }
 
         private static void SetValue(SerializedProperty property, SearchableAttributeParameters parameters,
-            IConvertToArrayString.Element element, int index)
+            ISearchableConverter.Element element, int index)
         {
-            IConvertToArrayString converter = parameters.Converter;
+            ISearchableConverter converter = parameters.Converter;
             if (converter == null)
                 converter = _converters[property.propertyType];
 

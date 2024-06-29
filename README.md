@@ -1,10 +1,14 @@
 # SearchableAttribute
-This package allows you to use the [Searchable] attribute that you can use the pop-up window and the search field to select the desired element.
 
-[Документация на русском](https://github.com/Paulsams/SearchableAttribute/blob/master/Documentation~/RU.md)
+This package allows you to use the `Searchable` attribute, which implements a popup window with a search bar that enables
+you to quickly find the desired item.
+
+[Документация на русском](Documentation~/RU.md)
 
 ## Add to project
+
 To add this package to the project, follow these steps:
+
 1) Open PackageManager;
 2) Select "Add package from get URL";
 3) Insert links to packages that are dependencies of this package:
@@ -12,66 +16,103 @@ To add this package to the project, follow these steps:
 4) Insert this link `https://github.com/Paulsams/SearchableAttribute.git`
 
 ## Dependencies
+
 - Is using:
     + MicsUtilities: https://github.com/Paulsams/MiscUtilities.git
 
 ## Opportunities
+
 1) Works with enums without any additional configuration.
+
 ```cs
 [SerializeField, Searchable] private KeyCode _keyCode;
 ```
 
-![image](https://github.com/Paulsams/SearchableAttribute/blob/master/Documentation~/Enum%20Example.gif)
+![image](Documentation~/EnumExample.gif)
 
-2) Allows you to write your custom converter to array string from which you can select and assign a value to a field via SerializeProperty.
+2) Allows you to write your custom Converters into a list of strings from which you can select and assign a value
+   to a field through `SerializedProperty`.
 
-More detailed:
-when importing this package, you will need to create folders along the path: `Utilities/SearchableAttribute`. The file "NamesConvertersToArrayString" (`Runtime/Names Converters ToArray String.cs`) is needed in order not to hardcode class names when writing them as an argument to an attribute. The `Editor/Custom Converters` folder can simply serve as a folder for creating your custom converters, but this does not prohibit you from creating them anywhere in the project. There is an example of a converter below. It is better to give the name of your castor converter with the suffix `ToArrayString`, because on the side of my code it is this phrase that ends.
+To create it, simply implement the `ISearchableConverter` interface as shown in the example below and pass the converter
+type to the `Searchable` constructor (most easily done via `typeof`).
+
+**Notes**:
+You can create converters anywhere, but please note that you need to create it in the Runtime assembly, which is why I
+have so many `#if UNITY_EDITOR` directives in the example below, to be able to write `typeof` over the type. This is
+done intentionally, as I didn't like the code generation solutions, and I didn’t want to use a solution through
+some `Mono.Cecil`.
+
 ```cs
-[SerializeField, Searchable(NamesConvertersToArrayString.ItemTypes)] private string _itemType;
+[SerializeField, Searchable(typeof(ItemTypesConverter))] private string _itemType;
 ```
 
 ```cs
+#if UNITY_EDITOR
 using System.Linq;
 using UnityEditor;
 using Paulsams.MicsUtils;
+using Paulsams.Searchable.Converters;
 using UnityEngine;
+#endif
 
-public class ItemTypesToArrayString : IConvertToArrayString
+namespace Paulsams.Searchable.Example
 {
-    private readonly IConvertToArrayString.Element[] _items;
-
-    public ItemTypesToArrayString()
+    public class ItemTypesConverter
+#if UNITY_EDITOR
+        : ISearchableConverter
     {
-        string pathToJson = $"{Application.dataPath}/Samples/SearchableAttribute/Example Enum and One Custom Converter/Runtime/ItemTypes/ItemsTypes.json";
+        private readonly ISearchableConverter.Element[] _items;
 
-        if (JsonSerializerUtility.TryDeserialize(out ItemType[] itemTypes, pathToJson))
+        public ItemTypesConverter()
         {
-            _items = itemTypes.Select((itemType) => new IConvertToArrayString.Element(itemType.Name, itemType.Category)).ToArray();
+            string pathToJson = $"{Application.dataPath}/Samples/SearchableAttribute/2.0.0/Example Enum and One Custom Converter/ItemTypes/ItemsTypes.json";
+
+            if (JsonSerializerUtility.TryDeserialize(out ItemType[] itemTypes, pathToJson))
+            {
+                _items = itemTypes.Select((itemType) => new ISearchableConverter.Element($"{itemType.Category}/{itemType.Name}")).ToArray();
+            }
+            else
+            {
+                Debug.LogError($"The file with item types was not found on the path: {pathToJson}");
+            }
         }
-        else
-        {
-            Debug.LogError($"The file with item types was not found on the path: {pathToJson}");
-        }
+
+        public ISearchableConverter.Element[] Convert(SerializedProperty property) => _items;
+
+        public int GetIndex(SerializedProperty property) => System.Array.FindIndex(_items, (element) =>
+            element.Name == property.stringValue);
+
+        public void SetIndex(SerializedProperty property, int index) =>
+            property.stringValue = _items[index].Name;
     }
-
-    public IConvertToArrayString.Element[] Convert(SerializedProperty property) => _items;
-
-    public int GetIndex(SerializedProperty property) => System.Array.FindIndex(_items, (element) => element.Name == property.stringValue);
-
-    public void SetIndex(SerializedProperty property, int index) => property.stringValue = _items[index].Name;
+#else
+{ }
+#endif
 }
 ```
 
-![image](https://github.com/Paulsams/SearchableAttribute/blob/master/Documentation~/Custom%20Converter.png)
+![image](Documentation~/CustomConverter.gif)
+
+3) There are two ways to render this window: using my custom window or through Unity's `AdvancedDropdown`.
+
+By default, the method using `AdvancedDropdown` is used, but you can explicitly specify the behavior using
+the `windowType` parameter in the attribute constructor.
+
+- `SearchableWindowType.Simple` - this is my implementation;
+- `SearchableWindowType.Advanced` - this is Unity's `AdvancedDropdown`.
 
 ## Constructors
+
 ```cs
-SearchableAttribute(string converterTypeName = null)
+SearchableAttribute(Type converterType = null, SearchableWindowType windowType = SearchableWindowType.Advanced)
 ```
 
-## Samples
-To download the examples for this package:
-1) Select this package in PackageManager;
-2) Expand the "Samples" tab on the right;
-3) And click the "Import" button on the example you are interested in.
+## Example
+
+To download the example for this package:
+
+1) Select this package in the `PackageManager`;
+2) Expand the `Samples` tab on the right;
+3) Click the `Import` button on the single example;
+4) Inside this example, there is a script `ExampleSearchable` inherited from `MonoBehaviour`, which contains several
+   examples of the attribute in use.

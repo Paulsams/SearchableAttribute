@@ -7,15 +7,16 @@ public enum SearchableWindowType
     Advanced,
 };
 
-[System.Serializable]
+[Serializable]
 public class SearchableAttribute : PropertyAttribute
 {
-    public readonly string ConverterTypeName;
+    public readonly Type ConverterType;
     public readonly SearchableWindowType WindowType;
 
-    public SearchableAttribute(string converterTypeName = null, SearchableWindowType windowType = SearchableWindowType.Advanced)
+    public SearchableAttribute(Type converterType = null,
+        SearchableWindowType windowType = SearchableWindowType.Advanced)
     {
-        ConverterTypeName = converterTypeName;
+        ConverterType = converterType;
         WindowType = windowType;
     }
 }

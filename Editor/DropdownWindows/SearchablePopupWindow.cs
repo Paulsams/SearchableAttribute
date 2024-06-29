@@ -1,11 +1,12 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Paulsams.Searchable.Converters;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace Paulsams.SearchableAttributeDrawer.Editor
+namespace Paulsams.Searchable.Editor
 {
     using static SettingsForSearchableWindow;
 
@@ -32,7 +33,7 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
                 }
             }
 
-            public void ChangeMax(int offset)
+            public void ShiftMax(int offset)
             {
                 _max += offset;
 
@@ -57,14 +58,14 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
 
         private static readonly Color32 _colorAboveCurrentIndex = new Color32(62, 95, 150, 255);
 
-        private readonly ReadOnlyCollection<IConvertToArrayString.Element> _allNames;
+        private readonly ReadOnlyCollection<ISearchableConverter.Element> _allNames;
         private readonly CurrentIndex _currentIndex;
         private readonly SearchableDrawer.SetValueHandler _callbackSetValue;
 
         private readonly GUIStyle _elementButtonStyle;
 
         private Vector2 _scrollPosition;
-        private IConvertToArrayString.Element[] _currentNames;
+        private ISearchableConverter.Element[] _currentNames;
 
         private SearchField _searchField;
         private string _searchedText = "";
@@ -88,7 +89,7 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
             }
         }
 
-        public SearchablePopupWindow(ReadOnlyCollection<IConvertToArrayString.Element> allNames,
+        public SearchablePopupWindow(ReadOnlyCollection<ISearchableConverter.Element> allNames,
             int startIndex, SearchableDrawer.SetValueHandler callbackSetValue)
         {
             _callbackSetValue = callbackSetValue;
@@ -139,19 +140,20 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
                 int lastNamesCount = _currentNames.Length;
 
                 if (oldSearchedText != _searchedText)
-                    _currentNames = _allNames.Where((element) =>
-                        element.Name.IndexOf(_searchedText, StringComparison.CurrentCultureIgnoreCase) != -1).ToArray();
+                    _currentNames = _allNames
+                        .Where((element) => element.Name
+                            .IndexOf(_searchedText, StringComparison.CurrentCultureIgnoreCase) != -1)
+                        .ToArray();
 
                 int offsetCount = _currentNames.Length - lastNamesCount;
                 if (offsetCount != 0)
-                    _currentIndex.ChangeMax(offsetCount);
+                    _currentIndex.ShiftMax(offsetCount);
 
                 for (int i = 0; i < _currentNames.Length; ++i)
                 {
                     Rect currentRect = EditorGUILayout.GetControlRect();
 
                     CheckForDrawAboveCurrentElement(guiEvent, i, currentRect);
-
                     if (DrawCurrentElementAndCheckPressedButton(currentRect, i))
                         return;
                 }
@@ -174,11 +176,13 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
 
         private bool DrawCurrentElementAndCheckPressedButton(Rect currentRect, int i)
         {
-            GUIContent contentButton =
-                new GUIContent(_currentNames[i].NameWithDescription, _currentNames[i].NameWithDescription);
+            var currentName = _currentNames[i];
+            var contentButton = new GUIContent(
+                currentName.Name + (currentName.Category != "" ? $" ({currentName.Category})" : ""),
+                currentName.NameWithDescription);
             if (GUI.Button(currentRect, contentButton, _elementButtonStyle))
             {
-                ChoiceText(_currentNames[i]);
+                ChoiceText(currentName);
                 return true;
             }
 
@@ -224,7 +228,7 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
             _scrollPosition = ScrollPositionForCurrentIndex;
         }
 
-        private void ChoiceText(IConvertToArrayString.Element element)
+        private void ChoiceText(ISearchableConverter.Element element)
         {
             _searchedText = element.Name;
 

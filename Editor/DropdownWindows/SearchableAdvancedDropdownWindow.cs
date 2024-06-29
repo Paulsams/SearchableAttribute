@@ -6,8 +6,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System;
+using Paulsams.Searchable.Converters;
 
-namespace Paulsams.SearchableAttributeDrawer.Editor
+namespace Paulsams.Searchable.Editor
 {
     public class SearchableAdvancedDropdownWindow : AdvancedDropdown
     {
@@ -50,7 +51,7 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
         private static readonly SettingsForSearchableWindow _settings =
             new SettingsForSearchableWindow(_padding, _heightElement);
 
-        private readonly ReadOnlyCollection<IConvertToArrayString.Element> _allNames;
+        private readonly ReadOnlyCollection<ISearchableConverter.Element> _allNames;
         private readonly SearchableDrawer.SetValueHandler _callbackSetValue;
 
         private readonly Dictionary<AdvancedDropdownItem, int> _dropdownItems =
@@ -59,7 +60,7 @@ namespace Paulsams.SearchableAttributeDrawer.Editor
         private readonly Item _itemRoot;
 
         public SearchableAdvancedDropdownWindow(string nameMainCategory, int selectedIndex,
-            ReadOnlyCollection<IConvertToArrayString.Element> allNames,
+            ReadOnlyCollection<ISearchableConverter.Element> allNames,
             SearchableDrawer.SetValueHandler callbackSetValue) : base(null)
         {
             _allNames = allNames;
