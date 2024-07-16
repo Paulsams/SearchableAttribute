@@ -46,9 +46,9 @@
 
 ```cs
 #if UNITY_EDITOR
+using System.IO;
 using System.Linq;
 using UnityEditor;
-using Paulsams.MicsUtils;
 using Paulsams.Searchable.Converters;
 using UnityEngine;
 #endif
@@ -59,26 +59,37 @@ namespace Paulsams.Searchable.Example
 #if UNITY_EDITOR
         : ISearchableConverter
     {
+        // Такое усложнение свойственно JsonUtility
+        [System.Serializable]
+        private class Wrapper { /*...*/ }
+        
         private readonly ISearchableConverter.Element[] _items;
 
         public ItemTypesConverter()
         {
-            string pathToJson = $"{Application.dataPath}/Samples/SearchableAttribute/2.0.0/Example Enum and One Custom Converter/ItemTypes/ItemsTypes.json";
+            string pathToJson = $"{Application.dataPath}/Samples/SearchableAttribute/2.0.1/" +
+                                "Example Enum and One Custom Converter/ItemTypes/ItemsTypes.json";
 
-            if (JsonSerializerUtility.TryDeserialize(out ItemType[] itemTypes, pathToJson))
+            if (File.Exists(pathToJson) == false)
             {
-                _items = itemTypes.Select((itemType) => new ISearchableConverter.Element($"{itemType.Category}/{itemType.Name}")).ToArray();
+                Debug.LogError($"File with item types was not found on the path: {pathToJson}");
+                return;
             }
-            else
-            {
-                Debug.LogError($"The file with item types was not found on the path: {pathToJson}");
-            }
+
+            // Чтобы не добавлять новую зависимость в виде того же Newtonsoft.Json — я использую JsonUtility.
+            // И я тщательно не рекомендую вообще его юзать.
+            var json = File.ReadAllText(pathToJson);
+            json = "{\"Items\":" + json + "}";
+            var wrapper = JsonUtility.FromJson<Wrapper>(json);
+            _items = wrapper.Items
+                .Select((itemType) => new ISearchableConverter.Element($"{itemType.Category}/{itemType.Name}"))
+                .ToArray();
         }
 
         public ISearchableConverter.Element[] Convert(SerializedProperty property) => _items;
 
-        public int GetIndex(SerializedProperty property) => System.Array.FindIndex(_items, (element) =>
-            element.Name == property.stringValue);
+        public int GetIndex(SerializedProperty property) =>
+            System.Array.FindIndex(_items, (element) => element.Name == property.stringValue);
 
         public void SetIndex(SerializedProperty property, int index) =>
             property.stringValue = _items[index].Name;
