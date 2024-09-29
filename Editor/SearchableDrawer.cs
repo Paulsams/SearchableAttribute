@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Paulsams.Searchable.Converters;
+using Paulsams.MicsUtils.Searchable.Converters;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using PopupWindow = UnityEditor.PopupWindow;
 
-namespace Paulsams.Searchable.Editor
+namespace Paulsams.MicsUtils.Searchable.Editor
 {
     public struct SearchableAttributeParameters
     {

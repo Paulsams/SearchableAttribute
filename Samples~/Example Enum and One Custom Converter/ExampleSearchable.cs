@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Paulsams.Searchable.Example
+namespace Paulsams.MicsUtils.Searchable.Example
 {
     public class ExampleSearchable : MonoBehaviour
     {

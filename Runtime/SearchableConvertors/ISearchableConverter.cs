@@ -1,7 +1,7 @@
 #if UNITY_EDITOR
 using UnityEditor;
 
-namespace Paulsams.Searchable.Converters
+namespace Paulsams.MicsUtils.Searchable.Converters
 {
     public interface ISearchableConverter
     {

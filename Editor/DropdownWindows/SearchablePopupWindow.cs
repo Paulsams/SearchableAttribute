@@ -1,12 +1,12 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Paulsams.Searchable.Converters;
+using Paulsams.MicsUtils.Searchable.Converters;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace Paulsams.Searchable.Editor
+namespace Paulsams.MicsUtils.Searchable.Editor
 {
     using static SettingsForSearchableWindow;
 

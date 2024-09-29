@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Paulsams.Searchable.Editor
+namespace Paulsams.MicsUtils.Searchable.Editor
 {
     public class SettingsForSearchableWindow
     {

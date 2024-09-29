@@ -2,11 +2,11 @@
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using Paulsams.Searchable.Converters;
+using Paulsams.MicsUtils.Searchable.Converters;
 using UnityEngine;
 #endif
 
-namespace Paulsams.Searchable.Example
+namespace Paulsams.MicsUtils.Searchable.Example
 {
     public class ItemTypesConverter
 #if UNITY_EDITOR
@@ -36,7 +36,7 @@ namespace Paulsams.Searchable.Example
 
         public ItemTypesConverter()
         {
-            string pathToJson = $"{Application.dataPath}/Samples/SearchableAttribute/2.0.1/" +
+            string pathToJson = $"{Application.dataPath}/Samples/SearchableAttribute/3.0.0/" +
                                 "Example Enum and One Custom Converter/ItemTypes/ItemsTypes.json";
 
             if (File.Exists(pathToJson) == false)

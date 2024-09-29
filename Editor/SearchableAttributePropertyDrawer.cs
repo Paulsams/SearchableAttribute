@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Paulsams.Searchable.Converters;
+using Paulsams.MicsUtils.Searchable.Converters;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace Paulsams.Searchable.Editor
+namespace Paulsams.MicsUtils.Searchable.Editor
 {
     [InitializeOnLoad]
     [CustomPropertyDrawer(typeof(SearchableAttribute))]

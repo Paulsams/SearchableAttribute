@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEditor;
 #endif
 
-namespace Paulsams.Searchable.Converters
+namespace Paulsams.MicsUtils.Searchable.Converters
 {
     public class EnumConverter
 #if UNITY_EDITOR

@@ -6,9 +6,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System;
-using Paulsams.Searchable.Converters;
+using Paulsams.MicsUtils.Searchable.Converters;
 
-namespace Paulsams.Searchable.Editor
+namespace Paulsams.MicsUtils.Searchable.Editor
 {
     public class SearchableAdvancedDropdownWindow : AdvancedDropdown
     {
@@ -158,9 +158,9 @@ namespace Paulsams.Searchable.Editor
 
         protected override AdvancedDropdownItem BuildRoot()
         {
-            var editorWindow =
-                GetType().GetField("m_WindowInstance", BindingFlags.Instance | BindingFlags.NonPublic)
-                    .GetValue(this) as EditorWindow;
+            var editorWindow = typeof(AdvancedDropdown)
+                .GetField("m_WindowInstance", BindingFlags.Instance | BindingFlags.NonPublic)
+                .GetValue(this) as EditorWindow;
             editorWindow.maxSize = _settings.SizeWindow;
 
             editorWindow.GetType().GetField("m_ScrollToSelected", BindingFlags.Instance | BindingFlags.NonPublic)
