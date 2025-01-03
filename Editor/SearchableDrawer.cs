@@ -41,6 +41,11 @@ namespace Paulsams.MicsUtils.Searchable.Editor
 
         public static class OnGUI
         {
+            private static readonly GUIStyle _labelStyle = new GUIStyle(EditorStyles.textField)
+            {
+                richText = true,
+            };
+
             public static void Draw(Rect position, SerializedProperty property, GUIContent label,
                 SearchableAttributeParameters parameters = default)
             {
@@ -68,9 +73,7 @@ namespace Paulsams.MicsUtils.Searchable.Editor
             private static void DrawLabel(Rect rectKey, ISearchableConverter.Element[] keys, int indexKey)
             {
                 string nameKey = keys[indexKey].NameWithDescription;
-                GUIStyle styleLabel = EditorStyles.textField;
-                styleLabel.richText = true;
-                EditorGUI.LabelField(rectKey, nameKey, EditorStyles.textField);
+                EditorGUI.LabelField(rectKey, nameKey, _labelStyle);
             }
         }
 

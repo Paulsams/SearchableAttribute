@@ -49,6 +49,13 @@ namespace Paulsams.MicsUtils.Searchable.Editor
                 _selected = (countIndexes + _selected % countIndexes) % countIndexes;
             }
         }
+        
+        private static readonly GUIStyle _styleForElementButton = new GUIStyle(EditorStyles.boldLabel)
+        {
+            contentOffset = new Vector2(15f, 0f),
+            fontSize = 12,
+            richText = true
+        };
 
         private static readonly float _heightFromSearchField =
             EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing + 5f;
@@ -99,7 +106,7 @@ namespace Paulsams.MicsUtils.Searchable.Editor
             InitSearchField();
 
             _currentIndex = new CurrentIndex(_allNames.Count, startIndex);
-            _elementButtonStyle = GetStyleForElementButton();
+            _elementButtonStyle = _styleForElementButton;
 
             _scrollPosition = new Vector2(0f,
                 _settings.HeightItem * (_currentIndex.Selected - HalfShowedElements + 0.5f));
@@ -112,16 +119,6 @@ namespace Paulsams.MicsUtils.Searchable.Editor
                 autoSetFocusOnFindCommand = false,
             };
             _searchField.downOrUpArrowKeyPressed += OnDownOrUpArrowKeyPressed;
-        }
-
-        private GUIStyle GetStyleForElementButton()
-        {
-            GUIStyle elementButtonStyle = EditorStyles.boldLabel;
-            elementButtonStyle.contentOffset = new Vector2(15f, 0f);
-            elementButtonStyle.fontSize = 12;
-            elementButtonStyle.richText = true;
-
-            return elementButtonStyle;
         }
 
         public override Vector2 GetWindowSize() => _settings.SizeWindow;
